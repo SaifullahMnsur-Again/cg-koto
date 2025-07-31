@@ -3,10 +3,41 @@ const GRADE_POINTS = { 'A+': 4.0, 'A': 3.75, 'A-': 3.5, 'B+': 3.25, 'B': 3.0, 'B
 let ALL_PRESETS = { semesters: [], electivePools: {} };
 
 let state = {
-    userInfo: { studentName: '', degree: '', university: '' },
+    userInfo: { studentName: '', degree: '', university: '', studentId: '' },
     years: [],
     calculations: { semesterGpaData: [] }
 };
+
+// --- Helper Utilities ---
+function debounce(func, delay) {
+    let timeout;
+    return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), delay);
+    };
+}
+
+function truncateToThreeDecimals(num) {
+    return num.toFixed(6).slice(0, -3); // Calculate to 6 decimals, truncate to 3
+}
+
+function getGradeDistribution(courses) {
+    if (!courses?.length) return "N/A";
+    const dist = Object.fromEntries(Object.keys(GRADE_POINTS).map(g => [g, 0]));
+    courses.forEach(c => {
+        const grade = Object.keys(GRADE_POINTS).find(g => GRADE_POINTS[g] == c.grade);
+        if (grade) dist[grade]++;
+    });
+    return Object.entries(dist).filter(([, count]) => count > 0).map(([g, c]) => `${g}:${c}`).join(' ') || "N/A";
+}
+
+function getDegreeAcronym() { 
+    return state.userInfo.degree?.match(/[A-Z]{2,}/)?.[0] || 'XXX'; 
+}
+
+function findSemester(id) { 
+    return state.years.flatMap(y => y.semesters).find(s => s.id === id); 
+}
 
 // --- Core Data Logic & Auto-Saving ---
 const saveStateToLocalStorage = debounce(() => {
@@ -35,9 +66,10 @@ function updateStateFromInput(id, field, value, type) {
         }
     }
     saveStateToLocalStorage();
+    recalculateScores();
 }
 
-// FIX: New function that ONLY does the math without rendering the whole UI
+// --- Calculations ---
 function recalculateScores() {
     let overallCredits = 0, overallPoints = 0, allCourses = [];
     let runningTotalCredits = 0, runningTotalPoints = 0;
@@ -57,14 +89,14 @@ function recalculateScores() {
                     if (!isNaN(gradePoint)) semPoints += credits * gradePoint;
                 }
             });
-            semester.gpa = (semCredits > 0 ? semPoints / semCredits : 0).toFixed(3);
+            semester.gpa = semCredits > 0 ? truncateToThreeDecimals(semPoints / semCredits) : '0.000';
             semester.totalCredits = semCredits;
             semester.gradeDistribution = getGradeDistribution(semester.courses);
             
             if (semCredits > 0) {
                 runningTotalCredits += semCredits;
                 runningTotalPoints += semPoints;
-                const runningCgpa = (runningTotalPoints / runningTotalCredits).toFixed(3);
+                const runningCgpa = runningTotalCredits > 0 ? truncateToThreeDecimals(runningTotalPoints / runningTotalCredits) : '0.000';
                 
                 semesterGpaData.push({ 
                     fullName: `${semester.name} (${year.name})`, 
@@ -78,7 +110,7 @@ function recalculateScores() {
             yearCredits += semCredits;
             yearPoints += semPoints;
         });
-        year.gpa = (yearCredits > 0 ? yearPoints / yearCredits : 0).toFixed(3);
+        year.gpa = yearCredits > 0 ? truncateToThreeDecimals(yearPoints / yearCredits) : '0.000';
         year.totalCredits = yearCredits;
         year.gradeDistribution = getGradeDistribution(yearCourses);
         overallCredits += yearCredits;
@@ -86,7 +118,7 @@ function recalculateScores() {
     });
 
     state.calculations = {
-        cgpa: (overallCredits > 0 ? overallPoints / overallCredits : 0).toFixed(3),
+        cgpa: overallCredits > 0 ? truncateToThreeDecimals(overallPoints / overallCredits) : '0.000',
         totalCredits: overallCredits,
         totalCourses: allCourses.length,
         gradeDistribution: getGradeDistribution(allCourses),
@@ -98,7 +130,7 @@ function recalculateScores() {
 // This function now handles full structural redraws
 function updateAllCalculations() {
     recalculateScores();
-    renderUI(); // Full redraw
+    renderUI();
 }
 
 // --- Data Initialization & Loading ---
@@ -107,7 +139,12 @@ function loadStateFromStorage() {
     if (savedData) {
         try {
             const parsed = JSON.parse(savedData);
-            state.userInfo = parsed.userInfo || state.userInfo;
+            state.userInfo = {
+                studentName: parsed.userInfo?.studentName || '',
+                degree: parsed.userInfo?.degree || '',
+                university: parsed.userInfo?.university || '',
+                studentId: parsed.userInfo?.studentId || ''
+            };
             state.years = parsed.years || [];
             if (!state.years.length) addYear(false);
         } catch (e) { addYear(false); }
@@ -121,7 +158,12 @@ function loadStateFromStorage() {
 function loadStateFromFile(fileContent) {
     try {
         const parsed = JSON.parse(fileContent);
-        state.userInfo = parsed.userInfo || state.userInfo;
+        state.userInfo = {
+            studentName: parsed.userInfo?.studentName || '',
+            degree: parsed.userInfo?.degree || '',
+            university: parsed.userInfo?.university || '',
+            studentId: parsed.userInfo?.studentId || ''
+        };
         state.years = parsed.years || [];
         updateAllCalculations();
     } catch (e) {
@@ -226,7 +268,7 @@ function confirmElectiveChoices(preset) {
             finalCourses.push(JSON.parse(select.value));
         } else {
             allValid = false;
-            if(select) select.classList.add('border-red-500');
+            if (select) select.classList.add('border-red-500');
         }
     });
     if (allValid && activeYearIdForPreset) {
@@ -237,7 +279,7 @@ function confirmElectiveChoices(preset) {
 
 function clearAllData() {
     if (!confirm('Are you sure you want to clear ALL data on this page? This cannot be undone.')) return;
-    state.userInfo = { studentName: '', degree: '', university: '' };
+    state.userInfo = { studentName: '', degree: '', university: '', studentId: '' };
     state.years = [];
     addYear();
 }
@@ -247,25 +289,3 @@ function clearSavedData() {
     localStorage.removeItem('cgKotoData');
     alert("Saved data has been cleared.");
 }
-
-// --- Helper Utilities ---
-function debounce(func, delay) {
-    let timeout;
-    return (...args) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), delay);
-    };
-}
-
-function getGradeDistribution(courses) {
-    if (!courses?.length) return "N/A";
-    const dist = Object.fromEntries(Object.keys(GRADE_POINTS).map(g => [g, 0]));
-    courses.forEach(c => {
-        const grade = Object.keys(GRADE_POINTS).find(g => GRADE_POINTS[g] == c.grade);
-        if (grade) dist[grade]++;
-    });
-    return Object.entries(dist).filter(([, count]) => count > 0).map(([g, c]) => `${g}:${c}`).join(' ') || "N/A";
-}
-
-function getDegreeAcronym() { return state.userInfo.degree?.match(/[A-Z]{2,}/)?.[0] || 'XXX'; }
-function findSemester(id) { return state.years.flatMap(y => y.semesters).find(s => s.id === id); }

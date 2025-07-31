@@ -192,7 +192,7 @@ function renderGpaTrendChart() {
             scales: {
                 y: { 
                     beginAtZero: true, 
-                    min: 0,
+                    min: 2.0,
                     max: 4.0, 
                     grid: { color: isDark ? '#374151' : '#e5e7eb' }, 
                     ticks: { color: isDark ? '#9ca3af' : '#4b5563', font: { size: 12 } } 

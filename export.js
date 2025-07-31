@@ -32,6 +32,7 @@ function getSemestersPassed(years) {
 
 // --- Export Functions ---
 function saveAsJSON() {
+    console.log('Starting JSON export...');
     const data = { userInfo: state.userInfo, years: state.years };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
@@ -40,12 +41,15 @@ function saveAsJSON() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+    console.log('JSON export completed.');
 }
 
 function exportAsText() {
+    console.log('Starting text export...');
     let text = `Academic Transcript\n\n`;
     text += `Student: ${state.userInfo.studentName || 'N/A'}\n`;
-    text += `Degree: ${state.userInfo.degree || 'N/A'}\n`;
+    text += `Student ID: ${state.userInfo.studentId || 'N/A'}\n`;
+    text += `Degree/Program: ${state.userInfo.degree || 'N/A'}\n`;
     text += `University: ${state.userInfo.university || 'N/A'}\n\n`;
     text += `Cumulative GPA (CGPA): ${state.calculations.cgpa}\n`;
     text += `Total Credits Completed: ${state.calculations.totalCredits}\n`;
@@ -76,24 +80,38 @@ function exportAsText() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+    console.log('Text export completed.');
 }
 
 function exportAsPDF() {
-    const exportButton = document.querySelector('a[data-action="export-pdf"]');
-    if (!exportButton) return;
+    console.log('Starting PDF export...');
+    const exportButton = document.querySelector('button[data-action="export-pdf"]');
+    if (!exportButton) {
+        console.error('Export PDF button not found. Selector: button[data-action="export-pdf"]');
+        alert('Export PDF button not found. Please check the page structure.');
+        return;
+    }
     const originalText = exportButton.innerHTML;
     exportButton.innerHTML = 'Generating...';
 
     setTimeout(() => {
         try {
+            if (typeof pdfMake === 'undefined') {
+                console.error('pdfMake library is not loaded.');
+                throw new Error('pdfMake library is not loaded.');
+            }
+
             let chartImage = null;
             const canvas = document.querySelector('#gpaTrendChart');
             if (canvas && state.calculations.semesterGpaData.length > 0) {
                 try {
                     chartImage = canvas.toDataURL('image/png', 1.0);
+                    console.log('Chart image generated successfully.');
                 } catch (e) {
-                    console.error("Could not generate chart image from canvas:", e);
+                    console.error('Could not generate chart image from canvas:', e);
                 }
+            } else {
+                console.warn('Canvas #gpaTrendChart not found or no semester GPA data available.');
             }
 
             let gradeFrequencyBody = [];
@@ -157,17 +175,42 @@ function exportAsPDF() {
                         style: 'footer'
                     };
                 },
+                pageBreakBefore: function(currentNode, followingNodesOnPage, nodesOnNextPage, previousNodesOnPage) {
+                    if (currentNode.style === 'yearHeader' || currentNode.style === 'semesterHeader') {
+                        const tableNode = followingNodesOnPage.find(node => node.style === 'courseTable');
+                        if (tableNode && tableNode.table) {
+                            const rowCount = tableNode.table.body.length;
+                            const approxHeight = rowCount * 15 + 20; // Reduced to 15pt per row + 20pt for header/margins
+                            const pageHeight = 842 - 60 - 80; // A4 height - margins
+                            const remainingSpace = pageHeight - (currentNode.startPosition?.top || 0);
+                            return approxHeight > remainingSpace; // Break only if table won't fit
+                        }
+                        return false; // No break if no table or table fits
+                    }
+                    return false;
+                },
                 content: [
-                    { text: `${state.userInfo.university || 'University of Excellence'}`, style: 'universityName', alignment: 'center' },
                     { text: 'Academic Transcript', style: 'documentTitle' },
                     {
                         style: 'userInfoContainer',
                         table: {
                             widths: ['*', '*'],
-                            body: [[
-                                { stack: [ { text: 'Student Name:', style: 'label' }, { text: state.userInfo.studentName || 'N/A', style: 'value' } ], border: [false, false, false, false] },
-                                { stack: [ { text: 'Degree Program:', style: 'label' }, { text: state.userInfo.degree || 'N/A', style: 'value' } ], alignment: 'right', border: [false, false, false, false] }
-                            ]]
+                            body: [
+                                [
+                                    { stack: [ 
+                                        { text: 'Student Name:', style: 'label' }, 
+                                        { text: state.userInfo.studentName || 'N/A', style: 'value' },
+                                        { text: 'Student ID:', style: 'label', margin: [0, 5, 0, 0] },
+                                        { text: state.userInfo.studentId || 'N/A', style: 'value' }
+                                    ], border: [false, false, false, false] },
+                                    { stack: [ 
+                                        { text: 'Degree/Program:', style: 'label' }, 
+                                        { text: state.userInfo.degree || 'N/A', style: 'value' },
+                                        { text: 'University:', style: 'label', margin: [0, 5, 0, 0] },
+                                        { text: state.userInfo.university || 'N/A', style: 'value' }
+                                    ], alignment: 'right', border: [false, false, false, false] }
+                                ]
+                            ]
                         },
                         layout: 'noBorders'
                     },
@@ -189,10 +232,18 @@ function exportAsPDF() {
                                     {text: state.calculations.totalCourses, style: 'summaryValue'},
                                     {text: getSemestersPassed(state.years), style: 'summaryValue'}
                                 ]
-                            ]
+                            ],
+                            dontBreakRows: true
                         },
                         layout: 'lightHorizontalLines'
-                    }
+                    },
+                    ...(chartImage ? [{
+                        stack: [
+                            { canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 10, 0, 10] },
+                            { text: 'GPA Trend Analysis', style: 'sectionHeader' },
+                            { image: chartImage, width: 515 }
+                        ]
+                    }] : [])
                 ],
                 styles: {
                     universityName: { fontSize: 16, bold: true, color: '#333333', alignment: 'center', margin: [0, 0, 0, 2] },
@@ -221,8 +272,8 @@ function exportAsPDF() {
                 }
             };
 
-            const yearBlocks = state.years.map(year => {
-                const semesterBlocks = (year.semesters || []).map(semester => {
+            const yearBlocks = state.years.map((year, yearIndex) => {
+                const semesterBlocks = (year.semesters || []).map((semester, semesterIndex) => {
                     const courseBody = semester.courses.map(course => {
                         const grade = Object.keys(GRADE_POINTS).find(g => GRADE_POINTS[g] == course.grade) || '';
                         return [
@@ -236,7 +287,8 @@ function exportAsPDF() {
                     const semesterContent = {
                         stack: [
                             { text: `${semester.name} (GPA: ${semester.gpa} | Credits: ${semester.totalCredits})`, style: 'semesterHeader' }
-                        ]
+                        ],
+                        pageBreak: 'none' // Rely on pageBreakBefore for breaks
                     };
 
                     if (courseBody.length > 0) {
@@ -245,6 +297,7 @@ function exportAsPDF() {
                             table: {
                                 headerRows: 1,
                                 keepWithHeaderRows: 1,
+                                dontBreakRows: true,
                                 widths: ['auto', '*', 'auto', 'auto'],
                                 body: [
                                     ['Code', 'Course Title', 'Credits', 'Grade'].map(h => ({text: h, style: 'tableHeader'})),
@@ -261,22 +314,20 @@ function exportAsPDF() {
                     stack: [
                         { text: `${year.name} (YGPA: ${year.gpa})`, style: 'yearHeader' },
                         ...semesterBlocks
-                    ]
+                    ],
+                    pageBreak: 'none' // Rely on pageBreakBefore for breaks
                 };
             });
+
+            // Add "Detailed Academic Results" heading on second page
+            docDefinition.content.push({
+                text: 'Detailed Academic Results',
+                style: 'sectionHeader',
+                pageBreak: 'before'
+            });
+
             docDefinition.content.push(...yearBlocks);
 
-            if (chartImage) {
-                docDefinition.content.push({
-                    pageBreak: 'before',
-                    stack: [
-                        { canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 10, 0, 10] },
-                        { text: 'GPA Trend Analysis', style: 'sectionHeader' },
-                        { image: chartImage, width: 515 }
-                    ]
-                });
-            }
-            
             const yearSummaryBody = state.years.map(year => [
                 { text: year.name, style: 'tableCell' },
                 { text: year.gpa, style: 'tableCell', alignment: 'center' },
@@ -303,6 +354,8 @@ function exportAsPDF() {
                             style: 'courseTable',
                             table: {
                                 headerRows: 1,
+                                keepWithHeaderRows: 1,
+                                dontBreakRows: true,
                                 widths: ['*', 'auto', 'auto'],
                                 body: [
                                     ['Academic Year', 'YGPA', 'Total Credits'].map(h => ({text: h, style: 'tableHeader'})),
@@ -316,6 +369,8 @@ function exportAsPDF() {
                             style: 'courseTable',
                             table: {
                                 headerRows: 1,
+                                keepWithHeaderRows: 1,
+                                dontBreakRows: true,
                                 widths: ['auto', 'auto', 'auto', '*'],
                                 body: [
                                     ['Semester', 'GPA', 'Credits', 'Grade Distribution'].map(h => ({text: h, style: 'tableHeader'})),
@@ -329,6 +384,8 @@ function exportAsPDF() {
                             style: 'courseTable',
                             table: {
                                 headerRows: 1,
+                                keepWithHeaderRows: 1,
+                                dontBreakRows: true,
                                 widths: ['*', '*', '*'],
                                 body: [
                                     ['Grade', 'Count', 'Frequency (%)'].map(h => ({text: h, style: 'tableHeader'})),
@@ -343,13 +400,16 @@ function exportAsPDF() {
 
             docDefinition.content.push({ text: '*** End of Transcript ***', alignment: 'center', margin: [0, 40, 0, 0], italics: true, color: '#555555' });
 
+            console.log('Generating PDF with docDefinition:', docDefinition);
             pdfMake.createPdf(docDefinition).download(sanitizeFilename(state.userInfo.studentName) + '.pdf');
+            console.log('PDF generation completed.');
 
         } catch (error) {
-            console.error("Error during PDF generation:", error);
-            alert("An unexpected error occurred while creating the PDF.");
+            console.error('Error during PDF generation:', error);
+            alert('An error occurred while creating the PDF: ' + error.message);
         } finally {
-            exportButton.innerHTML = 'Export as PDF';
+            exportButton.innerHTML = originalText;
+            console.log('PDF export process finished.');
         }
     }, 100);
 }
