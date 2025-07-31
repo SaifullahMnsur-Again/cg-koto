@@ -1,0 +1,155 @@
+:root {
+    --text-main-light: #1f2937;
+    --text-subtle-light: #4b5563;
+    --border-main-light: #e5e7eb;
+    --bg-card-light: white;
+    --bg-body-light: #f9fafb;
+    --bg-header-light: #f9fafb;
+
+    --text-main-dark: #f9fafb;
+    --text-subtle-dark: #9ca3af;
+    --border-main-dark: #374151;
+    --bg-card-dark: #1f2937;
+    --bg-body-dark: #111827;
+    --bg-header-dark: #374151;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+    overflow-x: hidden;
+    background-color: var(--bg-body-light);
+}
+
+.card {
+    background-color: var(--bg-card-light);
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.input-field,
+.select-field {
+    background-color: var(--bg-card-light);
+    border-color: var(--border-main-light);
+    width: 100%;
+}
+
+.input-field:focus,
+.select-field:focus {
+    border-color: #3b82f6;
+    --tw-ring-color: #bfdbfe;
+}
+
+.text-main { color: var(--text-main-light); }
+.text-subtle { color: var(--text-subtle-light); }
+.border-main { border-color: var(--border-main-light); }
+.table-header { background-color: var(--bg-header-light); }
+
+/* Dark Mode Styles */
+.dark body { background-color: var(--bg-body-dark); color: var(--text-main-dark); }
+.dark .card { background-color: var(--bg-card-dark); }
+.dark .input-field,
+.dark .select-field {
+    background-color: var(--bg-header-dark);
+    border-color: var(--border-main-dark);
+    color: var(--text-main-dark);
+}
+.dark .input-field:focus,
+.dark .select-field:focus {
+    border-color: #60a5fa;
+    --tw-ring-color: #3b82f6;
+}
+.dark .text-main { color: var(--text-main-dark); }
+.dark .text-subtle { color: var(--text-subtle-dark); }
+.dark .border-main { border-color: var(--border-main-dark); }
+.dark .table-header { background-color: var(--bg-header-dark); }
+.dark .select-field option { background-color: var(--bg-header-dark); color: var(--text-main-dark); }
+
+/* UI Element Styles */
+.delete-btn, .move-btn {
+    transition: all 0.2s;
+    opacity: 0.5;
+}
+.group:hover .delete-btn, .group:hover .move-btn { opacity: 1; }
+.move-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+.stat-value { font-size: 1.875rem; font-weight: 700; }
+.stat-label { font-size: 0.875rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+
+.dropdown:hover .dropdown-menu { display: block; }
+.dropdown-menu { display: none; }
+.dark .dropdown-menu { background-color: var(--bg-card-dark); }
+
+.grade-preview {
+    font-size: 0.75rem;
+    color: var(--text-subtle-light);
+    margin-left: 8px;
+    position: absolute;
+    white-space: nowrap;
+    pointer-events: none;
+}
+.dark .grade-preview { color: var(--text-subtle-dark); }
+
+/* Responsive Table for Mobile */
+@media (max-width: 767px) {
+    .semester-table thead {
+        display: none;
+    }
+    .semester-table tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .semester-table tr.course-row {
+        display: grid;
+        grid-template-areas:
+            "code title"
+            "credits grade"
+            "actions actions";
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem 1rem;
+        border: 1px solid var(--border-main-light);
+        border-radius: 0.5rem;
+        padding: 1rem;
+    }
+    .dark .semester-table tr.course-row {
+        border-color: var(--border-main-dark);
+    }
+    .course-row > td {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        border: none;
+        background: transparent !important;
+    }
+    .course-row > td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        font-size: 0.75rem;
+        margin-bottom: 0.25rem;
+        color: var(--text-subtle-light);
+    }
+    .dark .course-row > td::before {
+        color: var(--text-subtle-dark);
+    }
+    .course-row td[data-label='Code'] { grid-area: code; }
+    .course-row td[data-label='Title'] { grid-area: title; }
+    .course-row td[data-label='Credits'] { grid-area: credits; }
+    .course-row td[data-label='Grade'] { grid-area: grade; }
+    .course-row td:last-child {
+        grid-area: actions;
+        align-self: center;
+    }
+    .course-row td:last-child::before {
+        display: none; /* No "Actions" label */
+    }
+    .course-row td:last-child .flex {
+        justify-content: flex-end;
+    }
+}
+
+@media (min-width: 768px) {
+    .card {
+        overflow-x: visible; /* Prevent horizontal scroll on desktop */
+    }
+}

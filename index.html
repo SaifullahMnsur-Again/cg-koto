@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CG koto? - Advanced GPA & CGPA Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/pdfmake.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/vfs_fonts.js'></script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app" class="container mx-auto p-2 sm:p-4 md:p-6 max-w-full w-[95%] sm:w-[90%] md:w-[85%] lg:w-[80%]">
+        <header class="p-4 sm:p-6 rounded-lg shadow-md mb-4 sm:mb-8 card">
+            <div class="flex flex-col sm:flex-row justify-between items-start mb-4 sm:mb-6">
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-main">CG koto?</h1>
+                    <p class="text-subtle mt-1">Advanced GPA & CGPA Calculator</p>
+                </div>
+                <div class="flex gap-2 sm:gap-4 mt-2 sm:mt-0">
+                    <button type="button" id="theme-toggle" class="p-1 sm:p-2 rounded-full text-subtle hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                        <span id="theme-icon"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="userInfo" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-x-4 sm:gap-y-4">
+                <div class="flex flex-col">
+                    <label class="text-xs sm:text-sm font-medium text-subtle mb-1">Student Name</label>
+                    <input type="text" data-key="studentName" placeholder="e.g., Alex Doe" class="input-field p-1 sm:p-2 border rounded-md focus:ring-2 transition">
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-xs sm:text-sm font-medium text-subtle mb-1">Degree</label>
+                    <input type="text" data-key="degree" placeholder="e.g., B.Sc. in ICE" class="input-field p-1 sm:p-2 border rounded-md focus:ring-2 transition">
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-xs sm:text-sm font-medium text-subtle mb-1">University</label>
+                    <input type="text" data-key="university" placeholder="e.g., University of Engineering" class="input-field p-1 sm:p-2 border rounded-md focus:ring-2 transition">
+                </div>
+            </div>
+
+            <div class="border-t border-main my-2 sm:my-6"></div>
+
+            <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-between w-full mt-2 sm:mt-6">
+                <div class="flex gap-2 sm:gap-4 items-center w-full sm:w-auto">
+                    <div class="dropdown relative inline-block w-full sm:w-auto">
+                        <button type="button" class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded-lg transition shadow-sm w-full sm:w-auto">
+                            Save / Export ▼
+                        </button>
+                        <ul class="dropdown-menu absolute text-gray-700 pt-1 w-44 sm:w-52 z-20 shadow-lg rounded-md md:left-0 right-0">
+                            <li><a data-action="save-json" class="rounded-t bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 py-1 sm:py-2 px-2 sm:px-4 block whitespace-no-wrap text-main" href="#">Save as JSON <span class="text-xs text-subtle">(Reloadable)</span></a></li>
+                            <li><a data-action="export-pdf" class="bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 py-1 sm:py-2 px-2 sm:px-4 block whitespace-no-wrap text-main" href="#">Export as PDF</a></li>
+                            <li><a data-action="export-text" class="rounded-b bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 py-1 sm:py-2 px-2 sm:px-4 block whitespace-no-wrap text-main" href="#">Export as Text</a></li>
+                        </ul>
+                    </div>
+                    <label class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded-lg transition cursor-pointer shadow-sm w-full sm:w-auto">
+                        Load from JSON
+                        <input type="file" id="fileInput" class="hidden" accept=".json">
+                    </label>
+                </div>
+                <div class="flex gap-2 sm:gap-4 items-center w-full sm:w-auto">
+                    <button type="button" data-action="clear-all" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded-lg transition shadow-sm w-full sm:w-auto">Clear All Data</button>
+                    <button type="button" data-action="clear-saved" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded-lg transition shadow-sm w-full sm:w-auto">Clear Saved Data</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="card p-4 sm:p-6 rounded-lg shadow-md mb-8">
+            <div id="overallStats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="p-2 sm:p-4 shadow-sm rounded-lg text-center bg-gray-50 dark:bg-gray-700/50">
+                    <div id="cgpaDisplay" class="stat-value text-blue-600 dark:text-blue-400">0.000</div>
+                    <div class="stat-label text-subtle">Cumulative GPA (CGPA)</div>
+                </div>
+                <div class="p-2 sm:p-4 shadow-sm rounded-lg text-center bg-gray-50 dark:bg-gray-700/50">
+                    <div id="totalCreditsDisplay" class="stat-value text-green-600 dark:text-green-400">0</div>
+                    <div class="stat-label text-subtle">Total Credits</div>
+                </div>
+                <div class="p-2 sm:p-4 shadow-sm rounded-lg text-center bg-gray-50 dark:bg-gray-700/50">
+                    <div id="totalCoursesDisplay" class="stat-value text-purple-600 dark:text-purple-400">0</div>
+                    <div class="stat-label text-subtle">Total Courses</div>
+                </div>
+                <div class="p-2 sm:p-4 shadow-sm rounded-lg text-center flex flex-col justify-center bg-gray-50 dark:bg-gray-700/50">
+                    <div id="overallGradeDist" class="font-mono text-amber-600 dark:text-amber-400 text-sm leading-relaxed break-words">N/A</div>
+                    <div class="stat-label text-subtle mt-1 sm:mt-2">Grade Distribution</div>
+                </div>
+            </div>
+            
+            <div id="gpaTrendChartContainer" class="mt-4 border-t border-main pt-4">
+                <h3 class="text-lg font-bold text-main mb-2">GPA Trend</h3>
+                <div class="relative h-64 w-full">
+                    <canvas id="gpaTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div id="yearsContainer" class="space-y-2 sm:space-y-8"></div>
+
+        <div class="mt-2 sm:mt-6">
+            <button type="button" data-action="add-year" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded-lg transition shadow-sm w-full sm:w-auto">+ Add Academic Year</button>
+        </div>
+
+        <div id="presetModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center" onclick="closePresetModal(event)">
+            <div class="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-[90%] sm:w-2/3 lg:w-1/2 max-h-[80vh] flex flex-col">
+                <div class="p-2 sm:p-4 border-b border-main">
+                    <h2 class="text-lg sm:text-xl font-bold text-main">Load Semester from Preset</h2>
+                    <input type="text" id="presetSearch" onkeyup="filterPresets()" placeholder="Search presets..." class="input-field w-full mt-1 sm:mt-2 p-1 sm:p-2 border rounded-md">
+                </div>
+                <div id="presetList" class="p-2 sm:p-4 overflow-y-auto"></div>
+                <div class="p-2 sm:p-4 border-t border-main text-right">
+                    <button type="button" onclick="closePresetModal(event, true)" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded-lg">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="preElectiveModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center" onclick="closePreElectiveModal(event)">
+            <div class="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-[90%] sm:w-2/3 lg:w-1/2 max-h-[80vh] flex flex-col">
+                <div class="p-2 sm:p-4 border-b border-main">
+                    <h2 class="text-lg sm:text-xl font-bold text-main">Select Your Elective Courses</h2>
+                    <p class="text-subtle text-xs sm:text-sm mt-1">Choose your electives for this semester before adding the table.</p>
+                </div>
+                <div id="preElectiveList" class="p-2 sm:p-4 overflow-y-auto space-y-2 sm:space-y-4"></div>
+                <div class="p-2 sm:p-4 border-t border-main text-right">
+                    <button type="button" id="confirmElectivesBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded-lg">Confirm & Add Semester</button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-4 sm:mt-12 py-2 sm:py-6 card">
+            <div class="container mx-auto px-2 sm:px-4 text-center">
+                <div class="mb-2 sm:mb-4">
+                    <h2 class="text-xl sm:text-2xl font-bold text-main">CG koto?</h2>
+                    <p class="text-subtle">Developed by Saifullah Mansur</p>
+                </div>
+                <div class="flex justify-center gap-2 sm:gap-6 mb-2 sm:mb-4">
+                    <a href="https://github.com/saifullahmnsur-again" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1 sm:gap-2 text-blue-600 dark:text-blue-400 hover:underline">
+                        <svg class="h-4 sm:h-5 w-4 sm:w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.41 2.87 8.14 6.84 9.49.5.09.68-.22.68-.48v-1.7c-2.78.61-3.37-1.34-3.37-1.34-.45-1.15-1.1-1.46-1.1-1.46-.9-.61.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02A9.58 9.58 0 0112 6.8c.85.004 1.7.114 2.5.34 1.9-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.94.68 1.9v2.81c0 .27.18.58.69.48A10.01 10.01 0 0022 12c0-5.52-4.48-10-10-10z"/></svg>
+                        GitHub
+                    </a>
+                </div>
+                <p class="text-subtle text-xs sm:text-sm">&copy; 2025 Saifullah Mansur. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="state.js"></script>
+    <script src="ui.js"></script>
+    <script src="export.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

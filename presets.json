@@ -1,0 +1,146 @@
+{
+  "semesters": [
+    {
+      "id": "ru_ice_y1s1_2021",
+      "name": "RU ICE: Year 1, Semester 1 (Exam-2021)",
+      "courses": [
+        { "code": "ICE1111", "title": "Introduction to Information and Communication Engineering", "credits": "3" },
+        { "code": "ICE1121", "title": "Digital Electronics", "credits": "3" },
+        { "code": "ICE1122", "title": "Digital Electronics Lab", "credits": "1.5" },
+        { "code": "PHY1191", "title": "Electronics-I", "credits": "3" },
+        { "code": "PHY1192", "title": "Electronics-I Lab", "credits": "1.5" },
+        { "code": "MATH1111", "title": "Algebra, Trigonometry and Vector Analysis", "credits": "3" },
+        { "code": "CHEM1111", "title": "Physical and Inorganic Chemistry", "credits": "3" },
+        { "code": "ENG1111", "title": "Technical and Communicative English", "credits": "2" }
+      ]
+    },
+    {
+      "id": "ru_ice_y1s2_2021",
+      "name": "RU ICE: Year 1, Semester 2 (Exam-2021)",
+      "courses": [
+        { "code": "ICE1211", "title": "Electronics-II", "credits": "3" },
+        { "code": "ICE1212", "title": "Electronics-II Lab", "credits": "1.5" },
+        { "code": "CSE1291", "title": "Programming with C", "credits": "3" },
+        { "code": "CSE1292", "title": "Programming with C Lab", "credits": "1.5" },
+        { "code": "MATH1211", "title": "Differential and Integral Calculus", "credits": "3" },
+        { "code": "STAT1211", "title": "Statistics for Engineers", "credits": "2" },
+        { "code": "PHY1221", "title": "Applied Electricity and Magnetism", "credits": "3" },
+        { "code": "ECON1211", "title": "Economics", "credits": "2" },
+        { "code": "ICE1210", "title": "Viva-Voce", "credits": "2" }
+      ]
+    },
+    {
+      "id": "ru_ice_y2s1_2022",
+      "name": "RU ICE: Year 2, Semester 1 (Exam-2022)",
+      "courses": [
+        { "code": "ICE2111", "title": "Electronic Circuits and Semiconductor Devices", "credits": "3" },
+        { "code": "ICE2112", "title": "Electronic Circuits and Semiconductor Devices Lab", "credits": "1.5" },
+        { "code": "ICE2121", "title": "Analog Communication and Radio-TV Engineering", "credits": "3" },
+        { "code": "ICE2122", "title": "Analog Communication and Radio-TV Engineering Lab", "credits": "1.5" },
+        { "code": "EEE2191", "title": "Electromagnetic Fields and Waves", "credits": "3" },
+        { "code": "MATH2111", "title": "Matrices and Differential Equations", "credits": "3" },
+        { "code": "STAT2111", "title": "Basic Theory of Statistics", "credits": "2" },
+        { "code": "ACCO2111", "title": "Industrial Management and Accountancy", "credits": "2" }
+      ]
+    },
+    {
+      "id": "ru_ice_y2s2_2022",
+      "name": "RU ICE: Year 2, Semester 2 (Exam-2022)",
+      "courses": [
+        { "code": "ICE2211", "title": "Cellular and Mobile Communication", "credits": "3" },
+        { "code": "ICE2221", "title": "Signals and Systems", "credits": "3" },
+        { "code": "ICE2222", "title": "Signals and Systems Lab", "credits": "1.5" },
+        { "code": "ICE2231", "title": "Data Structures and Algorithms", "credits": "3" },
+        { "code": "ICE2232", "title": "Data Structures and Algorithms Lab", "credits": "1.5" },
+        { "code": "MATH2221", "title": "Discrete Mathematics and Numerical Methods", "credits": "3" },
+        { "code": "LAW2211", "title": "Cyber Law and Engineering Ethics", "credits": "2" },
+        { "code": "ICE2210", "title": "Viva-Voce", "credits": "2" }
+      ]
+    },
+    {
+      "id": "ru_ice_y3s1_2023",
+      "name": "RU ICE: Year 3, Semester 1 (Exam-2023)",
+      "courses": [
+        { "code": "ICE3111", "title": "Microwave Communication and Radar", "credits": "3" },
+        { "code": "ICE3121", "title": "Digital Signal Processing", "credits": "3" },
+        { "code": "ICE3122", "title": "Digital Signal Processing Lab", "credits": "1.5" },
+        { "code": "ICE3131", "title": "Java and Network Programming", "credits": "3" },
+        { "code": "ICE3132", "title": "Java and Network Programming Lab", "credits": "1.5" },
+        { "code": "ICE3141", "title": "Antenna Engineering", "credits": "3" },
+        { "code": "ICE3142", "title": "Antenna Engineering Lab", "credits": "1.5" },
+        { "code": "ICE3151", "title": "Satellite Communication", "credits": "3" }
+      ]
+    },
+    {
+      "id": "ru_ice_y3s2_2023",
+      "name": "RU ICE: Year 3, Semester 2 (Exam-2023)",
+      "courses": [
+        { "code": "ICE3211", "title": "Digital Image Processing", "credits": "3" },
+        { "code": "ICE3212", "title": "Digital Image Processing Lab", "credits": "1.5" },
+        { "code": "ICE3221", "title": "Digital Communication", "credits": "3" },
+        { "code": "ICE3222", "title": "Digital Communication Lab", "credits": "1.5" },
+        { "code": "ICE3231", "title": "Telecommunication Engineering", "credits": "3" },
+        { "code": "ICE3241", "title": "Optical Fiber Communication", "credits": "3" },
+        { "code": "ICE3242", "title": "Optical Fiber Communication Lab", "credits": "1.5" },
+        { "code": "ICE3251", "title": "Information System Analysis and Software Engineering", "credits": "3" },
+        { "code": "ICE3252", "title": "Information System Analysis and Software Engineering Lab", "credits": "1.5" },
+        { "code": "ICE3210", "title": "Viva-Voce", "credits": "2" }
+      ]
+    },
+    {
+      "id": "ru_ice_y4s1_2024",
+      "name": "RU ICE: Year 4, Semester 1 (Exam-2024)",
+      "courses": [
+        { "code": "ICE4111", "title": "Artificial Intelligence and Neural Computing", "credits": "3" },
+        { "code": "ICE4112", "title": "Artificial Intelligence and Neural Computing Lab", "credits": "1.5" },
+        { "isElective": true, "electivePool": "ru_ice_electives_y4s1_theory", "placeholder": "[Elective-I]", "credits": "3", "group": "elective1" },
+        { "isElective": true, "electivePool": "ru_ice_electives_y4s1_lab", "placeholder": "[Elective-I Lab]", "credits": "1.5", "group": "elective1" },
+        { "code": "ICE4131", "title": "Wireless Communication", "credits": "3" },
+        { "code": "ICE4132", "title": "Wireless Communication Lab", "credits": "1.5" },
+        { "isElective": true, "electivePool": "ru_ice_electives_y4s1_theory", "placeholder": "[Elective-II]", "credits": "3", "group": "elective2" },
+        { "isElective": true, "electivePool": "ru_ice_electives_y4s1_lab", "placeholder": "[Elective-II Lab]", "credits": "1.5", "group": "elective2" }
+      ]
+    },
+    {
+      "id": "ru_ice_y4s2_2024",
+      "name": "RU ICE: Year 4, Semester 2 (Exam-2024)",
+      "courses": [
+        { "code": "ICE4211", "title": "Computer Networks", "credits": "3" },
+        { "code": "ICE4212", "title": "Computer Networks Lab", "credits": "1.5" },
+        { "isElective": true, "electivePool": "ru_ice_electives_y4s2_theory", "placeholder": "[Elective-III]", "credits": "3", "group": "elective3" },
+        { "isElective": true, "electivePool": "ru_ice_electives_y4s2_lab", "placeholder": "[Elective-III Lab]", "credits": "1.5", "group": "elective3" },
+        { "code": "ICE4231", "title": "Information Theory and Coding", "credits": "3" },
+        { "isElective": true, "electivePool": "ru_ice_electives_y4s2_theory", "placeholder": "[Elective-IV]", "credits": "3", "group": "elective4" },
+        { "isElective": true, "electivePool": "ru_ice_electives_y4s2_lab", "placeholder": "[Elective-IV Lab]", "credits": "1.5", "group": "elective4" },
+        { "code": "ICE4210", "title": "Viva-Voce", "credits": "2" },
+        { "code": "ICE4252", "title": "Research Project", "credits": "2" }
+      ]
+    }
+  ],
+  "electivePools": {
+    "ru_ice_electives_y4s1_theory": [
+      { "code": "ICE4121", "title": "Computer Architecture and Microprocessor", "credits": "3", "linkedLabCode": "ICE4122" },
+      { "code": "ICE4141", "title": "Database Management Systems", "credits": "3", "linkedLabCode": "ICE4142" },
+      { "code": "ICE4151", "title": "Robotics and Automation", "credits": "3", "linkedLabCode": "ICE4152" },
+      { "code": "ICE4161", "title": "Internet of Things", "credits": "3", "linkedLabCode": "ICE4162" }
+    ],
+    "ru_ice_electives_y4s1_lab": [
+      { "code": "ICE4122", "title": "Computer Architecture and Microprocessor Lab", "credits": "1.5" },
+      { "code": "ICE4142", "title": "Database Management Systems Lab", "credits": "1.5" },
+      { "code": "ICE4152", "title": "Robotics and Automation Lab", "credits": "1.5" },
+      { "code": "ICE4162", "title": "Internet of Things Lab", "credits": "1.5" }
+    ],
+    "ru_ice_electives_y4s2_theory": [
+      { "code": "ICE4221", "title": "Cryptography", "credits": "3", "linkedLabCode": "ICE4222" },
+      { "code": "ICE4241", "title": "Web Engineering", "credits": "3", "linkedLabCode": "ICE4242" },
+      { "code": "ICE4261", "title": "Information Security", "credits": "3", "linkedLabCode": "ICE4262" },
+      { "code": "ICE4271", "title": "Machine Learning", "credits": "3", "linkedLabCode": "ICE4272" }
+    ],
+    "ru_ice_electives_y4s2_lab": [
+      { "code": "ICE4222", "title": "Cryptography Lab", "credits": "1.5" },
+      { "code": "ICE4242", "title": "Web Engineering Lab", "credits": "1.5" },
+      { "code": "ICE4262", "title": "Information Security Lab", "credits": "1.5" },
+      { "code": "ICE4272", "title": "Machine Learning Lab", "credits": "1.5" }
+    ]
+  }
+}
